@@ -1,9 +1,10 @@
 # Get from VIVO #
 
-TODO Describe the plugin shortly here.
+This plugin allow Moodle to retrieve Metadata from VIVO servers
 
-TODO Provide more detailed description here.
+it provides an interface for configuring the url of the server as well as credentials
 
+then it will retrieve the needed Metadata by executing SparQl queries.
 ## Installing via uploaded ZIP file ##
 
 1. Log in to your Moodle site as an admin and go to _Site administration >
