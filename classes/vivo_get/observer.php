@@ -32,11 +32,12 @@ require_once($CFG->dirroot.'/local/vivo_get/lib.php');
 class observer{
     public static function
     observe_user($event){
-        print_r($event);
+        //TODO aqui va la logica de la actualizacion en el callback
+        //print_r($event);
         global $USER;
-        print_r($USER);
+        //print_r($USER);
         //checkuser();
-        die();
+        //die();
         
     }
 }

@@ -50,6 +50,10 @@ $PAGE->set_heading($strtitle);
  $mform = new vivo_get_settings_form();
  $mform->display();
 
+$url = new moodle_url('/mod/forum/user.php', array('id' => 3, 'mode' => 'discussions'));
+$string = "Nuevo";
+$node = new core_user\output\myprofile\node('miscellaneous', 'forumdiscussionss', $string, null, $url);
+
  $query="";
     if ($fromform = $mform->get_data()) {
 
@@ -58,9 +62,10 @@ $PAGE->set_heading($strtitle);
             $query = $fromform->query;
         }
     } else {
-        //$query = 'SELECT ?s ?p ?o WHERE {?s ?p ?o} LIMIT 5';
+        $query = 'SELECT ?s ?p ?o WHERE {?s ?p ?o} LIMIT 5';
+        
         //primeropidopor orcid o campo vinculante con moodle
-        $query = 'SELECT ?s ?p ?o WHERE { ?s ?p <http://orcid.org/0000-0003-3587-5061> }';
+        //$query = 'SELECT ?s ?p ?o WHERE { ?s ?p <http://orcid.org/0000-0002-1282-5507> } LIMIT 10';
         //luego pido los datos delindividuo
         //$query = 'SELECT ?s ?p ?o WHERE { <http://elinf-vivo.sceiba.org/individual/n1462> ?p ?o }';
     }
@@ -70,6 +75,8 @@ $PAGE->set_heading($strtitle);
  try {
     
     print_r(call_api($query));
+    //print_r("cañandonga");
+    die();
     //print_r(call_api($query)->results->bindings[0]);
  } catch (\Throwable $th) {
     throw $th;

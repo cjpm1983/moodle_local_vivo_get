@@ -26,6 +26,6 @@ defined('MOODLE_INTERNAL') || die();
 
 $plugin->component = 'local_vivo_get';
 $plugin->release = '0.1.0';
-$plugin->version = 2022081912;
+$plugin->version = 2022081913;
 $plugin->requires = 2021051700;
 $plugin->maturity = MATURITY_ALPHA;
