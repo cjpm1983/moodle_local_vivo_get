@@ -49,11 +49,13 @@ $PAGE->set_heading($strtitle);
 
  $mform = new vivo_get_settings_form();
  $mform->display();
-
-$url = new moodle_url('/mod/forum/user.php', array('id' => 3, 'mode' => 'discussions'));
-$string = "Nuevo";
-$node = new core_user\output\myprofile\node('miscellaneous', 'forumdiscussionss', $string, null, $url);
-
+ 
+ if (isset($_GET['orcid'])){
+     $orcid = $_GET['orcid'];
+ }else{
+    $orcid = '0000-0000-0000-0000';
+ }
+ 
  $query="";
     if ($fromform = $mform->get_data()) {
 
@@ -65,19 +67,61 @@ $node = new core_user\output\myprofile\node('miscellaneous', 'forumdiscussionss'
         $query = 'SELECT ?s ?p ?o WHERE {?s ?p ?o} LIMIT 5';
         
         //primeropidopor orcid o campo vinculante con moodle
-        //$query = 'SELECT ?s ?p ?o WHERE { ?s ?p <http://orcid.org/0000-0002-1282-5507> } LIMIT 10';
+        
         //luego pido los datos delindividuo
         //$query = 'SELECT ?s ?p ?o WHERE { <http://elinf-vivo.sceiba.org/individual/n1462> ?p ?o }';
     }
     
- //$query = 'SELECT ?s ?p ?o WHERE {?s ?p ?o} LIMIT 5';
- echo "Current query = $query <br><br><br>";
+    //$query = 'SELECT ?s ?p ?o WHERE { ?s ?p <http://orcid.org/0000-0002-1282-5507> } LIMIT 10';
+    //$query = 'SELECT ?s ?p ?o WHERE { <http://elinf-vivo.sceiba.org/individual/n5412> ?p ?o }';
+    $query="PREFIX vivo:     <http://vivoweb.org/ontology/core#>
+    PREFIX bibo:     <http://purl.org/ontology/bibo/>
+    PREFIX rdfs:     <http://www.w3.org/2000/01/rdf-schema#>
+    PREFIX foaf:     <http://xmlns.com/foaf/0.1/>
+    SELECT ?orcid ?author_label ?academic_label ?academic_article ?year
+    WHERE {
+        ?author vivo:relatedBy ?authorship . 
+        ?author a foaf:Person. 
+        ?authorship a vivo:Authorship. 
+        ?author rdfs:label ?author_label. 
+        ?academic_article a bibo:AcademicArticle. 
+        ?academic_article rdfs:label ?academic_label. 
+        ?authorship vivo:relates ?academic_article . 
+        ?author vivo:orcidId ?orcid. 
+        ?academic_article vivo:dateTimeValue ?dtv .
+        ?dtv vivo:dateTime ?dt .
+        BIND(SUBSTR(str(?dt),1,4) AS ?year)
+        FILTER(contains(STR(?orcid), '".$orcid."')) 
+    }";
+
+    //carlos orcid '0000-0002-1282-5507'
+    //orcid belllo '0000-0001-5567-2638'
+ //echo "Current query = $query <br><br><br>";
+
  try {
+
+   
     
-    print_r(call_api($query));
-    //print_r("cañandonga");
-    die();
-    //print_r(call_api($query)->results->bindings[0]);
+    echo "<br><br>";
+    //print_r(call_api($query)->results->bindings[0]->orcid->value);
+    //print_r(call_api($query)->results->bindings);
+    $r = call_api($query);
+    foreach ($r->results->bindings as $key => $value) {
+        echo "<br>";
+        echo "<a target='_blank' href='".$bodytag = str_replace("http:", "https:", $value->academic_article->value)."'>".$value->academic_label->value." - ".$value->year->value."</a>";
+        
+    }
+    
+    
+    //$endpointquery = $query.'&'.'email='.$username.'&'.'password='.$password;
+    
+    //$data=sparqlQuery($query,$endpoint,$username,$password);
+    //print "Retrieved data:\n" . json_encode($data);
+    
+
+
+    //die();
+    
  } catch (\Throwable $th) {
     throw $th;
  }
