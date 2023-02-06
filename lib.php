@@ -102,21 +102,86 @@ function local_vivo_get_myprofile_navigation(core_user\output\myprofile\tree $tr
     //$registro_user_info_data = $DB->get_record_sql('SELECT * FROM {user_info_data}');
      
     $orcid=$registro_user_info_data->data;
-    if ($orcid!="") {
- 
-    //building new profile node
+
+
+
+    //building new profile node Categoria Científica
+
+    $query="PREFIX vivo:     <http://vivoweb.org/ontology/core#>
+    PREFIX rdfs:     <http://www.w3.org/2000/01/rdf-schema#>
+    PREFIX foaf:     <http://xmlns.com/foaf/0.1/>
+    PREFIX ciecuba:  <https://ciecuba.cris.cu/>
     
-    $url = new moodle_url('/local/vivo_get/index.php', array('orcid' => $orcid));
-    $string = "Academics Articles";
-    $node = new core_user\output\myprofile\node('research', 'research', $string, null, $url);  
-    }else{
-    $string = "ORCID must be provided in order to show research";
-    $node = new core_user\output\myprofile\node('research', 'research', $string, null, $url);  
+    SELECT ?cat_academicc ?cat_cientific 
+    WHERE {
+    ?author a foaf:Person.
+    ?author vivo:orcidId ?orcid.
+     
+    ?author ciecuba:ostentalacategoriade ?category_cientific.
+    ?category_cientific rdfs:label ?cat_cientific.
+     
+    ?author ciecuba:ostenta ?category_academicc.
+    ?category_academicc rdfs:label ?cat_academicc.
+     
+         
+    FILTER(contains(STR(?orcid), '$orcid'))
+    }";
+
+    //carlos orcid '0000-0002-1282-5507'
+    //orcid belllo '0000-0001-5567-2638'
+    //echo "Current query = $query <br><br><br>";
+
+    try {
+  
+        
+        echo "<br><br>";
+        //print_r(call_api($query)->results->bindings[0]->orcid->value);
+        print_r(call_api($query));
+        die();
+        $r = call_api($query);
+        $catac=$r->results->bindings[0]->cat_academicc->value;
+        $catcient=$r->results->bindings[0]->cat_cientific->value;
+
+        
+    } catch (\Throwable $th) {
+        throw $th;
     }
 
+
+    if ($catac!="") {
+        $string = "<b>Categoria Académica:</b> $catac";
+        $node = new core_user\output\myprofile\node('research', 'researchd', $string, null, null);  
+        }else{
+        $string = "No se ha encontrado la categoría académica";
+        $node = new core_user\output\myprofile\node('research', 'researchcd', $string, null, null);  
+    }
+    $tree->add_node($node);
+
+    if ($catcient!="") {
+        $string = "<b>Categoria Científica:</b> $catcient";
+        $node = new core_user\output\myprofile\node('research', 'researche', $string, null, null);  
+        }else{
+        $string = "No se ha encontrado la categoría científica";
+        $node = new core_user\output\myprofile\node('research', 'researchce', $string, null, null);  
+    }
     $tree->add_node($node);
 
 
+    // if orcid exists we get metadata from vivo Articles
+    if ($orcid!="") {
+
+
+        //building new profile node
+        
+        $url = new moodle_url('/local/vivo_get/index.php', array('orcid' => $orcid));
+        $string = "<i class='icon fa fa-graduation-cap fa-fw' aria-hidden='true'></i> Academics Articles";
+        $node = new core_user\output\myprofile\node('research', 'research', $string, null, $url);  
+        }else{
+        $string = "ORCID must be provided in order to show research";
+        $node = new core_user\output\myprofile\node('research', 'research', $string, null, null);  
+    }
+    $tree->add_node($node);
+    
 
     //print("elid del orcid es".$registro_user_info_fields);    
     //print_r($userObj);

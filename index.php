@@ -30,7 +30,8 @@ require_once(dirname(__FILE__) . '/../../config.php');
 require_once($CFG->dirroot.'/local/vivo_get/lib.php');
 require_once($CFG->dirroot.'/local/vivo_get/form/vivo_get_settings_form.php');
 //require_once('lib.php');
-
+require_once($CFG->dirroot.'/user/profile/lib.php');
+require_once($CFG->libdir.'/tablelib.php');
 $url=new moodle_url('/local/vivo_get/index.php');
 
 $systemcontext= context_system::instance();//get_system_context();
@@ -45,17 +46,18 @@ $PAGE->set_pagelayout('standard');
 $PAGE->set_heading($strtitle);
 
  echo $OUTPUT->header();
- echo $OUTPUT->heading(get_string('title','local_vivo_get'));
-
+ //echo $OUTPUT->heading('Publications');
+/*
  $mform = new vivo_get_settings_form();
  $mform->display();
- 
+ */
  if (isset($_GET['orcid'])){
      $orcid = $_GET['orcid'];
  }else{
     $orcid = '0000-0000-0000-0000';
  }
- 
+
+ /*
  $query="";
     if ($fromform = $mform->get_data()) {
 
@@ -71,6 +73,7 @@ $PAGE->set_heading($strtitle);
         //luego pido los datos delindividuo
         //$query = 'SELECT ?s ?p ?o WHERE { <http://elinf-vivo.sceiba.org/individual/n1462> ?p ?o }';
     }
+    */
     
     //$query = 'SELECT ?s ?p ?o WHERE { ?s ?p <http://orcid.org/0000-0002-1282-5507> } LIMIT 10';
     //$query = 'SELECT ?s ?p ?o WHERE { <http://elinf-vivo.sceiba.org/individual/n5412> ?p ?o }';
@@ -97,7 +100,8 @@ $PAGE->set_heading($strtitle);
     //carlos orcid '0000-0002-1282-5507'
     //orcid belllo '0000-0001-5567-2638'
  //echo "Current query = $query <br><br><br>";
-
+$r=null;
+$columnas;
  try {
 
    
@@ -108,10 +112,21 @@ $PAGE->set_heading($strtitle);
     $r = call_api($query);
     foreach ($r->results->bindings as $key => $value) {
         echo "<br>";
-        echo "<a target='_blank' href='".$bodytag = str_replace("http:", "https:", $value->academic_article->value)."'>".$value->academic_label->value." - ".$value->year->value."</a>";
+        echo "<a target='_blank' href='".$bodytag = str_replace("http:", "https:", $value->academic_article->value)."'><i class='icon fa fa-graduation-cap fa-fw' aria-hidden='true'></i>".$value->academic_label->value." - ".$value->year->value."</a>";
         
     }
-    
+
+
+
+        
+        //echo "</div>";
+    //}
+
+//}
+
+
+
+
     
     //$endpointquery = $query.'&'.'email='.$username.'&'.'password='.$password;
     
@@ -126,8 +141,59 @@ $PAGE->set_heading($strtitle);
     throw $th;
  }
  
+$tablef = new flexible_table('uniqueaid22');
+
+if (!$tablef->is_downloading()){
+            $tablef->define_baseurl($url);
+            $tablef->define_columns(array('article','year'));
+            $tablef->define_headers(array('Article','Year'));
+
+            $tablef->setup();
+            //Hay que ver elarbol de categorias mayor y en dependencia poner columnas a la tabla
+            //$MayorArbolSize = 0;
+            //print_r($r->results->bindings[0]);
+            array_push($columnas,"lolo","fufu");
+            foreach($r->results->bindings as $re){
+                    //$columnas = getCategorias($r->id, $r->category);
+                    
+                    //array_push($columnas,$re->academic_article->value,$re->academic_label->value);  
+                    array_push($columnas,"lolo","fufu");
+        
+                    $tablef->add_data(array($re->academic_article->value,$re->academic_label->value));//$columnas);
+
+                    /*
+                    if (count($columnas)>$MayorArbolSize){
+                        $MayorArbolSize=count($columnas);
+                        
+                    }*/
+                    // echo $r->nombre.", ";
+                }
+                //$tablef->add_data($columnas);
+
+                /*
+                $tablef->set_control_variables(
+                    array(
+                        TABLE_VAR_SORT=>'ssort',
+                        TABLE_VAR_IFIRST=>'sifirst',
+                        TABLE_VAR_ILAST=>'silast',
+                        TABLE_VAR_PAGE=>'sPAGE',
+                    )
+                );
+                */
+                
+
+            // $tablef->out(40,true);
+
+            //$tablef->print_html();
+            $tablef->finish_output();
+
+            }
 
 
-echo $OUTPUT->footer();
+ if (!$tablef->is_downloading()){
+    echo $OUTPUT->footer();
+}
+
+//echo $OUTPUT->footer();
 
 ?>
