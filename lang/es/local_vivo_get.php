@@ -25,29 +25,29 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$string['pluginname'] = 'Get from VIVO';
-$string['settingsHeader'] = 'Settings for Sparql queries to VIVO server';
-$string['labelServer'] = 'Sparql endpoint server (ex. https://localhost/api/sparqlQuery)';
-$string['errorRequired'] = 'This fields is required';
-$string['save'] = 'Save';
-$string['labelUser'] = 'User email';
-$string['labelPassword'] = 'User password';
-$string['title'] = 'Research';
-$string['labelQuery'] = 'sparql query';
-$string['mappedFields'] = 'Mapped fields';
-$string['mappedFieldsInfo'] = 'remote user fields that will be mapped to local profile fields';
+$string['pluginname'] = 'Obtener de VIVO';
+$string['settingsHeader'] = 'Configuracion para consultas Sparql a un servidor VIVO';
+$string['labelServer'] = 'Sparql endpoint (ex. https://localhost/api/sparqlQuery)';
+$string['errorRequired'] = 'Campo requerido';
+$string['save'] = 'Guardar';
+$string['labelUser'] = 'Correo';
+$string['labelPassword'] = 'contraseña';
+$string['title'] = 'Título';
+$string['labelQuery'] = 'consulta Sparql';
+$string['mappedFields'] = 'Campos Mapeados';
+$string['mappedFieldsInfo'] = 'campos remotos que serán mapeados al perfil local';
 
-$string['catac'] = 'Academic Category';
+$string['catac'] = 'Categoría Academica';
 $string['nocatac'] = 'No se encontró la Categoría Académica';
-$string['catacient'] = 'Scientific Category';
+$string['catacient'] = 'Categoría Científica';
 $string['nocatacient'] = 'No se encontró la Categoría Científica';
-$string['tituloa'] = 'Academic Title';
-$string['research'] = 'Research';//investigación
-$string['article'] = 'Article';
-$string['year'] = 'Year';
-$string['vivo'] = 'Profile on VIVO';
-$string['vivo_link'] = 'Research';
-$string['vivo_rareas'] = 'Research Areas';
+$string['tituloa'] = 'Título Académico';
+$string['research'] = 'Investigación';//investigación
+$string['article'] = 'Artículo';
+$string['year'] = 'Año';
+$string['vivo'] = 'Perfil en VIVO';
+$string['vivo_link'] = 'Investigación';
+$string['vivo_rareas'] = 'Areas de Investigación';
 
 
 

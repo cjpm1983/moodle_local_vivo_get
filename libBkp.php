@@ -87,7 +87,7 @@ function local_vivo_get_myprofile_navigation(core_user\output\myprofile\tree $tr
     global $USER;
 
     //creating category
-    $category = new core_user\output\myprofile\category('research', get_string('research','local_vivo_get'), 'coursedetails');
+    $category = new core_user\output\myprofile\category('research', 'Research', null);
     $tree->add_category($category);
     
     //getting orcid
@@ -107,34 +107,18 @@ function local_vivo_get_myprofile_navigation(core_user\output\myprofile\tree $tr
 
     //building new profile node Categoria Científica
 
-    $query1="PREFIX vivo:     <http://vivoweb.org/ontology/core#>
+    $query="PREFIX vivo:     <http://vivoweb.org/ontology/core#>
     PREFIX rdfs:     <http://www.w3.org/2000/01/rdf-schema#>
     PREFIX foaf:     <http://xmlns.com/foaf/0.1/>
     PREFIX ciecuba:  <https://ciecuba.cris.cu/>
     
-    SELECT ?cat_cientific 
+    SELECT ?cat_academicc ?cat_cientific 
     WHERE {
     ?author a foaf:Person.
-    #?author vivo:orcidId ?orcid.
-    ?author vivo:eRACommonsId ?orcid.
+    ?author vivo:orcidId ?orcid.
      
     ?author ciecuba:ostentalacategoriade ?category_cientific.
     ?category_cientific rdfs:label ?cat_cientific.
-     
-         
-    FILTER(contains(STR(?orcid), '$orcid'))
-    }";
-
-    $query2="PREFIX vivo:     <http://vivoweb.org/ontology/core#>
-    PREFIX rdfs:     <http://www.w3.org/2000/01/rdf-schema#>
-    PREFIX foaf:     <http://xmlns.com/foaf/0.1/>
-    PREFIX ciecuba:  <https://ciecuba.cris.cu/>
-    
-    SELECT ?cat_academicc 
-    WHERE {
-    ?author a foaf:Person.
-    #?author vivo:orcidId ?orcid.
-    ?author vivo:eRACommonsId ?orcid.
      
     ?author ciecuba:ostenta ?category_academicc.
     ?category_academicc rdfs:label ?cat_academicc.
@@ -143,35 +127,21 @@ function local_vivo_get_myprofile_navigation(core_user\output\myprofile\tree $tr
     FILTER(contains(STR(?orcid), '$orcid'))
     }";
 
-    $query3="PREFIX vivo:     <http://vivoweb.org/ontology/core#>
-    PREFIX rdfs:     <http://www.w3.org/2000/01/rdf-schema#>
-    PREFIX foaf:     <http://xmlns.com/foaf/0.1/>
-    PREFIX ciecuba:  <https://ciecuba.cris.cu/>
-    
-    SELECT ?researchAreaLabel
-    WHERE {
-    ?author a foaf:Person.
-    ?author vivo:eRACommonsId ?orcid.
-  
-    ?author vivo:hasResearchArea ?ra .
-    ?ra rdfs:label ?researchAreaLabel .
-         
-    FILTER(contains(STR(?orcid), '$orcid'))
-    }";
+    //carlos orcid '0000-0002-1282-5507'
+    //orcid belllo '0000-0001-5567-2638'
+    //echo "Current query = $query <br><br><br>";
 
     try {
   
-  
-        $r = call_api($query2);
+        
+        echo "<br><br>";
+        //print_r(call_api($query)->results->bindings[0]->orcid->value);
+        print_r(call_api($query));
+        die();
+        $r = call_api($query);
         $catac=$r->results->bindings[0]->cat_academicc->value;
-
-        $r = call_api($query1);
         $catcient=$r->results->bindings[0]->cat_cientific->value;
-      
-        $r = call_api($query3);
 
-        //This is an array of the research areas
-        $rareas=$r->results->bindings;
         
     } catch (\Throwable $th) {
         throw $th;
@@ -179,74 +149,73 @@ function local_vivo_get_myprofile_navigation(core_user\output\myprofile\tree $tr
 
 
     if ($catac!="") {
-        $string = "<b>".get_string('catac','local_vivo_get').":</b> $catac";
+        $string = "<b>Categoria Académica:</b> $catac";
         $node = new core_user\output\myprofile\node('research', 'researchd', $string, null, null);  
-        $tree->add_node($node);
         }else{
-        $string = get_string('nocatac','local_vivo_get');//"No se ha encontrado la categoría académica";
+        $string = "No se ha encontrado la categoría académica";
         $node = new core_user\output\myprofile\node('research', 'researchcd', $string, null, null);  
     }
-    
+    $tree->add_node($node);
 
     if ($catcient!="") {
-        $string = "<b>".get_string('catacient','local_vivo_get').":</b> $catcient";
-        $node = new core_user\output\myprofile\node('research', 'researche', $string, null, null); 
-        $tree->add_node($node); 
+        $string = "<b>Categoria Científica:</b> $catcient";
+        $node = new core_user\output\myprofile\node('research', 'researche', $string, null, null);  
         }else{
-        $string = get_string('nocatacient','local_vivo_get');//"No se ha encontrado la categoría científica";
+        $string = "No se ha encontrado la categoría científica";
         $node = new core_user\output\myprofile\node('research', 'researchce', $string, null, null);  
     }
-    
-    
-    if ($rareas[0]->researchAreaLabel->value!="") {//if at least one area
-
-
-        //building new profile node
-        
-        $string = "<b>".get_string('vivo_rareas','local_vivo_get').": </b>";
-        foreach ($rareas as $key => $value) {
-            if ($key>0) $string=$string.", ";
-            $string=$string."<i class='icon fa fa-book fa-fw' aria-hidden='true'></i>";
-            $string=$string.$value->researchAreaLabel->value;
-        }
-        //$rareas[0]->researchAreaLabel->value;
-        $node = new core_user\output\myprofile\node('research', 'researcha1', $string, null, null);  
-        }else{
-        $string = "ORCID must be provided in order to show research";
-        $node = new core_user\output\myprofile\node('research', 'research', $string, null, null);  
-    }
     $tree->add_node($node);
+
+
     // if orcid exists we get metadata from vivo Articles
-    /*
     if ($orcid!="") {
 
 
         //building new profile node
         
         $url = new moodle_url('/local/vivo_get/index.php', array('orcid' => $orcid));
-        $string = "<i class='icon fa fa-graduation-cap fa-fw' aria-hidden='true'></i> ".get_string('research','local_vivo_get');
+        $string = "<i class='icon fa fa-graduation-cap fa-fw' aria-hidden='true'></i> Academics Articles";
         $node = new core_user\output\myprofile\node('research', 'research', $string, null, $url);  
         }else{
         $string = "ORCID must be provided in order to show research";
         $node = new core_user\output\myprofile\node('research', 'research', $string, null, null);  
     }
     $tree->add_node($node);
-    */
-    // if orcid exists make a link
-    if ($orcid!="") {
+    
 
+    //print("elid del orcid es".$registro_user_info_fields);    
+    //print_r($userObj);
+    //print_r($DB);
+    //die();
 
-        //building new profile node
-        
-        $url = new moodle_url('/local/vivo_get/index.php', array('orcid' => $orcid,'vivo'=>1));
-        $string = "<img style='width: 48px;background:black;' src='http://vivo.lyrasis.org/wp-content/uploads/2021/08/VIVO-Logo.png'></img> ".get_string('vivo_link','local_vivo_get');
-        $node = new core_user\output\myprofile\node('research', 'vivo', $string, null, $url);  
-        }else{
-        $string = "ORCID must be provided in order to show research";
-        $node = new core_user\output\myprofile\node('research', 'vivo', $string, null, null);  
-    }
-    $tree->add_node($node);
-  
+    //print_r($user->profile['orcid']);
+    //die();
+    //checkuser();
+
+    //TODO hacer la consulta e vivo
+    /**
+     * curl -i -d 'email=epriveron@uclv.cu' -d 'password=Vivo2022*' -d 'query=SELECT ?s ?p ?o WHERE { ?s ?p <http://orcid.org/0000-0001-5567-2638>}' -H 'Accept: application/sparql-results+json' 'https://elinf-vivo.sceiba.org/api/sparqlQuery'
+     * 
+     * tomas del response
+     * "s": { "type": "uri" , "value": "http://elinf-vivo.sceiba.org/individual/n6203" 
+     * limpias y cambias http: por https:
+     * 
+     { 
+     "head": {
+      "vars": [ "s" , "p" , "o" ]
+            } ,
+            "results": {
+                "bindings": [
+                { 
+                    "s": { "type": "uri" , "value": "http://elinf-vivo.sceiba.org/individual/n6203" } ,
+                    "p": { "type": "uri" , "value": "http://vivoweb.org/ontology/core#orcidId" }
+                }
+                ]
+            }
+            }
+
+     */
+
 }
 
 ?>

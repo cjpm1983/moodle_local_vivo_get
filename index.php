@@ -36,16 +36,54 @@ $url=new moodle_url('/local/vivo_get/index.php');
 
 $systemcontext= context_system::instance();//get_system_context();
 
+$download = optional_param('download', '', PARAM_ALPHA);
+
+$tablef = new flexible_table('uniqueaid22');
+$tablef->is_downloading($download, 'test',
+                    'testing123');
 
 
-$PAGE->set_url($url);
-$PAGE->set_context($systemcontext);
-$strtitle=get_string('title','local_vivo_get');
-$PAGE->set_title($strtitle);
-$PAGE->set_pagelayout('standard');
-$PAGE->set_heading($strtitle);
 
- echo $OUTPUT->header();
+if (isset($_GET['vivo'])){
+    $vivo = $_GET['vivo'];
+
+    $orcid = $_GET['orcid'];
+
+    if ($vivo==1){
+        $query="
+        PREFIX vivo:     <http://vivoweb.org/ontology/core#>
+        PREFIX foaf:     <http://xmlns.com/foaf/0.1/>
+        
+        select ?author
+        WHERE {
+        ?author a foaf:Person .
+        #?author vivo:orcidId ?orcid.
+        ?author vivo:eRACommonsId ?orcid.
+    
+            FILTER(contains(STR(?orcid), '$orcid'))
+        }
+        LIMIT 100
+        ";
+    
+        $uri=call_api($query)->results->bindings[0]->author->value;
+    
+        header("Location: $uri");
+    }
+}else{
+    //$orcid = '0000-0000-0000-0000';
+}
+
+
+if (!$tablef->is_downloading()) {
+    $PAGE->set_url($url);
+    $PAGE->set_context($systemcontext);
+    $strtitle=get_string('title','local_vivo_get');
+    $PAGE->set_title($strtitle);
+    $PAGE->set_pagelayout('standard');
+    $PAGE->set_heading($strtitle);
+
+    echo $OUTPUT->header();
+}
  //echo $OUTPUT->heading('Publications');
 /*
  $mform = new vivo_get_settings_form();
@@ -53,27 +91,14 @@ $PAGE->set_heading($strtitle);
  */
  if (isset($_GET['orcid'])){
      $orcid = $_GET['orcid'];
+
+
+
+
  }else{
     $orcid = '0000-0000-0000-0000';
  }
 
- /*
- $query="";
-    if ($fromform = $mform->get_data()) {
-
-        if ($fromform->query) {
-
-            $query = $fromform->query;
-        }
-    } else {
-        $query = 'SELECT ?s ?p ?o WHERE {?s ?p ?o} LIMIT 5';
-        
-        //primeropidopor orcid o campo vinculante con moodle
-        
-        //luego pido los datos delindividuo
-        //$query = 'SELECT ?s ?p ?o WHERE { <http://elinf-vivo.sceiba.org/individual/n1462> ?p ?o }';
-    }
-    */
     
     //$query = 'SELECT ?s ?p ?o WHERE { ?s ?p <http://orcid.org/0000-0002-1282-5507> } LIMIT 10';
     //$query = 'SELECT ?s ?p ?o WHERE { <http://elinf-vivo.sceiba.org/individual/n5412> ?p ?o }';
@@ -90,42 +115,50 @@ $PAGE->set_heading($strtitle);
         ?academic_article a bibo:AcademicArticle. 
         ?academic_article rdfs:label ?academic_label. 
         ?authorship vivo:relates ?academic_article . 
-        ?author vivo:orcidId ?orcid. 
+        #?author vivo:orcidId ?orcid. 
+        ?author vivo:eRACommonsId ?orcid.
+
         ?academic_article vivo:dateTimeValue ?dtv .
         ?dtv vivo:dateTime ?dt .
         BIND(SUBSTR(str(?dt),1,4) AS ?year)
+        
         FILTER(contains(STR(?orcid), '".$orcid."')) 
+        #FILTER(contains(STR(?orcid), '0000-0001-5567-2638'))
     }";
 
     //carlos orcid '0000-0002-1282-5507'
     //orcid belllo '0000-0001-5567-2638'
- //echo "Current query = $query <br><br><br>";
-$r=null;
-$columnas;
+    //echo "Current query = $query <br><br><br>";
+$r=array();
+$columnas=array();
+
+///******************REMOVE THIS***************************** */
+if (!$tablef->is_downloading()) {
+   print_r(call_api($query));
+
+
+
+
  try {
 
    
     
-    echo "<br><br>";
+    //echo "<br><br>";
     //print_r(call_api($query)->results->bindings[0]->orcid->value);
     //print_r(call_api($query)->results->bindings);
     $r = call_api($query);
+    //$temp = $r->results->bindings;
+    
     foreach ($r->results->bindings as $key => $value) {
-        echo "<br>";
-        echo "<a target='_blank' href='".$bodytag = str_replace("http:", "https:", $value->academic_article->value)."'><i class='icon fa fa-graduation-cap fa-fw' aria-hidden='true'></i>".$value->academic_label->value." - ".$value->year->value."</a>";
+        //echo "<br>";
+        //echo "<a target='_blank' href='".$bodytag = str_replace("http:", "https:", $value->academic_article->value)."'><i class='icon fa fa-graduation-cap fa-fw' aria-hidden='true'></i>".$value->academic_label->value." - ".$value->year->value."</a>";
         
     }
-
-
-
-        
-        //echo "</div>";
-    //}
-
-//}
-
-
-
+    /*
+    if (!$tablef->is_downloading()) {
+        echo "<b>helo world</b><br>";
+     }
+    */
 
     
     //$endpointquery = $query.'&'.'email='.$username.'&'.'password='.$password;
@@ -140,37 +173,30 @@ $columnas;
  } catch (\Throwable $th) {
     throw $th;
  }
- 
-$tablef = new flexible_table('uniqueaid22');
+
+} 
+
 
 if (!$tablef->is_downloading()){
             $tablef->define_baseurl($url);
             $tablef->define_columns(array('article','year'));
-            $tablef->define_headers(array('Article','Year'));
+            $tablef->define_headers(array(get_string('article','local_vivo_get'),get_string('year','local_vivo_get')));
 
             $tablef->setup();
-            //Hay que ver elarbol de categorias mayor y en dependencia poner columnas a la tabla
-            //$MayorArbolSize = 0;
+            
             //print_r($r->results->bindings[0]);
-            array_push($columnas,"lolo","fufu");
             foreach($r->results->bindings as $re){
                     //$columnas = getCategorias($r->id, $r->category);
                     
                     //array_push($columnas,$re->academic_article->value,$re->academic_label->value);  
-                    array_push($columnas,"lolo","fufu");
+                    //array_push($columnas,"lolo","fufu");
         
-                    $tablef->add_data(array($re->academic_article->value,$re->academic_label->value));//$columnas);
+                    $tablef->add_data(array("<a target='_blank' href='".$bodytag = str_replace("http:", "https:", $re->academic_article->value)."'><i class='icon fa fa-graduation-cap fa-fw' aria-hidden='true'></i>".$re->academic_label->value."</a>",$re->year->value));//$columnas);
 
-                    /*
-                    if (count($columnas)>$MayorArbolSize){
-                        $MayorArbolSize=count($columnas);
-                        
-                    }*/
-                    // echo $r->nombre.", ";
                 }
                 //$tablef->add_data($columnas);
 
-                /*
+                
                 $tablef->set_control_variables(
                     array(
                         TABLE_VAR_SORT=>'ssort',
@@ -179,21 +205,15 @@ if (!$tablef->is_downloading()){
                         TABLE_VAR_PAGE=>'sPAGE',
                     )
                 );
-                */
                 
-
-            // $tablef->out(40,true);
-
-            //$tablef->print_html();
+                
             $tablef->finish_output();
 
             }
 
 
- if (!$tablef->is_downloading()){
+if (!$tablef->is_downloading()){
     echo $OUTPUT->footer();
 }
-
-//echo $OUTPUT->footer();
 
 ?>

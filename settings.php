@@ -82,7 +82,7 @@ if ( $hassiteconfig ){
 	
 	) );
 
-	
+	/*
     $settings->add( new admin_setting_heading(
 		'local_vivo_get/mappedfields',
 		get_string('mappedFields','local_vivo_get'),
@@ -201,6 +201,7 @@ if ( $hassiteconfig ){
 		PARAM_TEXT
 	
 	) );
+	*/
 
 	// $settings->add(new admin_setting_configcheckbox_with_advanced('mod_lesson/password',
 	// get_string('password', 'lesson'), get_string('configpassword_desc', 'lesson'),
