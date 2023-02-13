@@ -2,8 +2,9 @@
 
 This plugin allow Moodle to retrieve Metadata from VIVO servers
 
+<div style="width: 60%; height: 60%">
 ![alt text](https://github.com/cjpm1983/moodle_local_vivo_get/blob/main/img/vivo.png?raw=true)
-
+</div>
 it provides an interface for configuring the url of the server as well as credentials
 
 ![alt text](https://github.com/cjpm1983/moodle_local_vivo_get/blob/main/img/settings.png?raw=true)
