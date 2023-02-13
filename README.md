@@ -1,6 +1,6 @@
 # Get from VIVO #
 
-This plugin allow Moodle to retrieve Metadata from VIVO servers
+This plugin allow Moodle to retrieve Metadata from VIVO CRIS servers [`https://vivo.lyrasis.org`](https://vivo.lyrasis.org/)
 
 ![alt text](https://github.com/cjpm1983/moodle_local_vivo_get/blob/main/img/vivo.png?raw=true)
 
