@@ -115,8 +115,8 @@ function local_vivo_get_myprofile_navigation(core_user\output\myprofile\tree $tr
     SELECT ?cat_cientific 
     WHERE {
     ?author a foaf:Person.
-    #?author vivo:orcidId ?orcid.
-    ?author vivo:eRACommonsId ?orcid.
+    ?author vivo:orcidId ?orcid.
+    #?author vivo:eRACommonsId ?orcid.
      
     ?author ciecuba:ostentalacategoriade ?category_cientific.
     ?category_cientific rdfs:label ?cat_cientific.
@@ -133,8 +133,8 @@ function local_vivo_get_myprofile_navigation(core_user\output\myprofile\tree $tr
     SELECT ?cat_academicc 
     WHERE {
     ?author a foaf:Person.
-    #?author vivo:orcidId ?orcid.
-    ?author vivo:eRACommonsId ?orcid.
+    ?author vivo:orcidId ?orcid.
+    #?author vivo:eRACommonsId ?orcid.
      
     ?author ciecuba:ostenta ?category_academicc.
     ?category_academicc rdfs:label ?cat_academicc.
@@ -151,7 +151,8 @@ function local_vivo_get_myprofile_navigation(core_user\output\myprofile\tree $tr
     SELECT ?researchAreaLabel
     WHERE {
     ?author a foaf:Person.
-    ?author vivo:eRACommonsId ?orcid.
+    ?author vivo:orcidId ?orcid.
+    #?author vivo:eRACommonsId ?orcid.
   
     ?author vivo:hasResearchArea ?ra .
     ?ra rdfs:label ?researchAreaLabel .

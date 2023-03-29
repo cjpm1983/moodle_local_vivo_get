@@ -57,8 +57,8 @@ if (isset($_GET['vivo'])){
         select ?author
         WHERE {
         ?author a foaf:Person .
-        #?author vivo:orcidId ?orcid.
-        ?author vivo:eRACommonsId ?orcid.
+        ?author vivo:orcidId ?orcid.
+        #?author vivo:eRACommonsId ?orcid.
     
             FILTER(contains(STR(?orcid), '$orcid'))
         }
@@ -115,8 +115,8 @@ if (!$tablef->is_downloading()) {
         ?academic_article a bibo:AcademicArticle. 
         ?academic_article rdfs:label ?academic_label. 
         ?authorship vivo:relates ?academic_article . 
-        #?author vivo:orcidId ?orcid. 
-        ?author vivo:eRACommonsId ?orcid.
+        ?author vivo:orcidId ?orcid. 
+        #?author vivo:eRACommonsId ?orcid.
 
         ?academic_article vivo:dateTimeValue ?dtv .
         ?dtv vivo:dateTime ?dt .
